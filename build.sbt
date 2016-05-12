@@ -39,5 +39,6 @@ lazy val server = project
   .settings(commonSettings: _*)
   .settings(
     version := "1.0",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.4"
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.4",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4"
   )
