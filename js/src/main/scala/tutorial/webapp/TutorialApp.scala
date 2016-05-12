@@ -3,10 +3,9 @@ package tutorial.webapp
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, ReactDOM}
 import org.scalajs.dom.document
+import tutorial.Person
 
 import scala.scalajs.js.JSApp
-
-case class Person(name: String)
 
 object TutorialApp extends JSApp {
   def main(): Unit = {

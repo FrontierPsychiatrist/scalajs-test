@@ -1,19 +1,11 @@
 name := "scala_test"
 
-lazy val commonSettings = Seq(
-  scalaVersion := "2.11.8"
-)
+scalaVersion in ThisBuild := "2.11.8"
 
 lazy val root = project.in(file("."))
-  .settings(commonSettings: _*)
-  .aggregate(client, server)
+  .aggregate(testJVM, testJS)
 
-lazy val client = crossProject
-  .enablePlugins(ScalaJSPlugin)
-  .settings(commonSettings: _*)
-  .settings(
-    version := "1.0"
-  )
+lazy val test = crossProject.in(file("."))
   .jsSettings(
     libraryDependencies += "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1",
     jsDependencies ++= Seq(
@@ -33,12 +25,12 @@ lazy val client = crossProject
         minified "react-dom-server.min.js"
         dependsOn "react-dom.js"
         commonJSName "ReactDOMServer")
-  ).js
-
-lazy val server = project
-  .settings(commonSettings: _*)
-  .settings(
+  )
+  .jvmSettings(
     version := "1.0",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.4",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4"
   )
+
+lazy val testJVM = test.jvm
+lazy val testJS = test.js
