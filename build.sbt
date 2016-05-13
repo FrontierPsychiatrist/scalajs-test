@@ -6,6 +6,9 @@ lazy val root = project.in(file("."))
   .aggregate(testJVM, testJS)
 
 lazy val test = crossProject.in(file("."))
+  .settings(
+    libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.4.0"
+  )
   .jsSettings(
     libraryDependencies += "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1",
     jsDependencies ++= Seq(

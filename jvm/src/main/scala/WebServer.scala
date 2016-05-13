@@ -1,8 +1,11 @@
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
+import akka.http.scaladsl.model.headers.{`Access-Control-Allow-Methods`, `Access-Control-Allow-Origin`}
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import tutorial.Person
+import upickle.default.write
 
 import scala.io.StdIn
 
@@ -16,7 +19,11 @@ object WebServer {
     val route =
       path("test") {
         get {
-          complete(HttpEntity(ContentTypes.`text/plain(UTF-8)`, "Hello World"))
+          complete(
+            HttpResponse(StatusCodes.OK,
+              List(`Access-Control-Allow-Methods`(HttpMethods.OPTIONS, HttpMethods.GET), `Access-Control-Allow-Origin`.*),
+              HttpEntity(write(Person("Moritz")))
+            ))
         }
       }
 
