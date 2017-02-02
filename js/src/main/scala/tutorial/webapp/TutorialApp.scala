@@ -1,29 +1,42 @@
 package tutorial.webapp
 
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{ReactComponentB, ReactDOM}
-import org.scalajs.dom.{Event, document}
-import org.scalajs.dom.raw.XMLHttpRequest
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactDOM}
+import org.scalajs.dom.document
+import org.scalajs.dom.ext.Ajax
 import tutorial.Person
 
 import scala.scalajs.js.JSApp
 
+// argh, why?
+import scala.concurrent.ExecutionContext.Implicits.global
+
+case class State(person: Person)
+
+class Backend($: BackendScope[Unit, State]) {
+  def handleClick: Callback = {
+    Callback.future[Unit](
+      Ajax.get("http://localhost:5000/test")
+      .map(xhr => {
+        val person = upickle.default.read[Person](xhr.responseText)
+        $.modState(_.copy(person = person))
+      }
+    ))
+  }
+
+  def render(state: State) = <.div(
+    <.span("Hello ", state.person.name),
+    <.button("Load", ^.onClick --> handleClick)
+  )
+}
+
 object TutorialApp extends JSApp {
   def main(): Unit = {
-    println("Hello world!")
-
-    val HelloMessage = ReactComponentB[Person]("HelloMessage")
-      .render($ => <.div("Hello", $.props.name, "Foo"))
+    val Application = ReactComponentB[Unit]("Application")
+      .initialState(State(Person("Empty")))
+      .renderBackend[Backend]
       .build
 
-    val xhr = new XMLHttpRequest()
-    xhr.open("GET", "http://localhost:5000/test")
-    xhr.onload = (e: Event) => {
-      if(xhr.status == 200) {
-        val person = upickle.default.read[Person](xhr.responseText)
-        ReactDOM.render(HelloMessage(person), document.body)
-      }
-    }
-    xhr.send()
+    ReactDOM.render(Application(), document.body)
   }
 }
